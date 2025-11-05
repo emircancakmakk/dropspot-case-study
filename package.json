@@ -1,0 +1,16 @@
+{
+  "name": "dropspot",
+  "private": true,
+  "packageManager": "yarn@4.10.3",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n backend,web -c auto \"yarn workspace backend dev\" \"yarn workspace web dev\"",
+    "dev:backend": "yarn workspace backend dev",
+    "dev:web": "yarn workspace web dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
