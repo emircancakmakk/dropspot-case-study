@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  role      Role       @default(USER)
+  createdAt DateTime   @default(now())
+  Waits     Waitlist[]
+}
+
+model Drop {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  stock       Int
+  claimStart  DateTime
+  claimEnd    DateTime
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  Waits       Waitlist[]
+}
+
+model Waitlist {
+  id       String   @id @default(cuid())
+  userId   String
+  dropId   String
+  joinedAt DateTime @default(now())
+
+  claimed       Boolean   @default(false)
+  claimCode     String?   @unique
+  claimAt       DateTime?
+  priorityScore Int       @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+  drop Drop @relation(fields: [dropId], references: [id])
+
+  @@unique([userId, dropId])
+}
