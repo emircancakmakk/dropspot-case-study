@@ -198,7 +198,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/error@npm:^4.0.0":
+"@fastify/error@npm:^4.0.0, @fastify/error@npm:^4.2.0":
   version: 4.2.0
   resolution: "@fastify/error@npm:4.2.0"
   checksum: 10c0/8bdafe95b368a71dfc5644ef22e0a2412dfbb2f300cf4658fdbd9035c96d7c034c53fd7d38e1150437d9cf7a2d75e6bd05e458cf9ba5f2e47e527df8a5e0bd4e
@@ -833,8 +833,11 @@ __metadata:
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@types/node": "npm:^24.10.0"
     bcrypt: "npm:^6.0.0"
+    bcryptjs: "npm:^3.0.3"
     dotenv: "npm:^17.2.3"
     fastify: "npm:^5.6.1"
+    fastify-plugin: "npm:^5.1.0"
+    fastify-type-provider-zod: "npm:^6.1.0"
     jsonwebtoken: "npm:^9.0.2"
     prisma: "npm:^6.18.0"
     supertest: "npm:^7.1.4"
@@ -860,6 +863,15 @@ __metadata:
     node-gyp: "npm:latest"
     node-gyp-build: "npm:^4.8.4"
   checksum: 10c0/006e69d4b3f0f021051fa9d998a768721a51dde28e7848e3e775ab608ba3476b25fa9262a7082ececbb0d493b0b6ca83673a6f3810b114fe90ec1bc6ae4b35b2
+  languageName: node
+  linkType: hard
+
+"bcryptjs@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "bcryptjs@npm:3.0.3"
+  bin:
+    bcrypt: bin/bcrypt
+  checksum: 10c0/127c94699f07eab5fbbb89d600c3f0e36ae6fd001e028139740b41fffb62a23a2743523fb88f442ae3308a27d4843b97ccb9e436d78f5c5899be187d0972c6d5
   languageName: node
   linkType: hard
 
@@ -1470,6 +1482,27 @@ __metadata:
   version: 3.1.0
   resolution: "fast-uri@npm:3.1.0"
   checksum: 10c0/44364adca566f70f40d1e9b772c923138d47efeac2ae9732a872baafd77061f26b097ba2f68f0892885ad177becd065520412b8ffeec34b16c99433c5b9e2de7
+  languageName: node
+  linkType: hard
+
+"fastify-plugin@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "fastify-plugin@npm:5.1.0"
+  checksum: 10c0/61b330b8cb03a3581b796d745137499a782934abcf65dbf9a41d07248520cfd220b3ae8b16afeaf81af712e68e1ac24352895132cfeb2b372c66662c0170f365
+  languageName: node
+  linkType: hard
+
+"fastify-type-provider-zod@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "fastify-type-provider-zod@npm:6.1.0"
+  dependencies:
+    "@fastify/error": "npm:^4.2.0"
+  peerDependencies:
+    "@fastify/swagger": ">=9.5.1"
+    fastify: ^5.5.0
+    openapi-types: ^12.1.3
+    zod: ">=4.1.5"
+  checksum: 10c0/712bcb6d69f79f79710ca330cdf27a569b4dd3c6a9f611b0dd85b60b53789c6dc27e15feaa75b73422e5cddc9a5c5bc3ac5b53af400bc89c1f1181ce0e586169
   languageName: node
   linkType: hard
 
