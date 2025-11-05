@@ -9,7 +9,12 @@ export async function signup(
 ) {
   const { email, password, fullName } = req.body
   const result = await S.signup({ email, password, fullName})
-  return reply.code(201).send(result)
+  return reply.code(200).send({
+    status: "success",
+    message: "Kullanıcı kaydı tamamlandı.",
+    user: result,
+  });
+  
 }
 
 export async function signin(
@@ -18,5 +23,11 @@ export async function signin(
 ) {
   const { email, password } = req.body
   const result = await S.signin({ email, password })
-  return reply.code(201).send(result)
+  return reply.code(200).send(
+    {
+      status: "success",
+      message: "Giriş başarılı.",
+      user: result,
+    }
+  )
 }
