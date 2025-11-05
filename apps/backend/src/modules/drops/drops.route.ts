@@ -1,3 +1,4 @@
+// src/modules/drops/drops.routes.ts
 import { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import * as C from "./drops.controller";
@@ -5,55 +6,69 @@ import {
   dropIdParamSchema,
   createDropSchema,
   updateDropSchema,
-  dropListResponseSchema,
-  joinDropResponseSchema,
   joinDropBodySchema,
-  claimDropResponseSchema,
   claimDropBodySchema,
+  claimDropResponseSchema,
 } from "./drops.schema";
+import { requireAuth, requireRoles } from "../auth/guards";
 
 export default async function routes(app: FastifyInstance) {
   const r = app.withTypeProvider<ZodTypeProvider>();
 
-  r.get("/drops", {}, C.getActiveDrops);
+  r.get("/drops", {}, C.getActiveDrops as any);
 
   r.post(
     "/drops/:id/join",
     {
-      schema: {
-        params: dropIdParamSchema,
-        body: joinDropBodySchema,
-      },
+      preHandler: [requireAuth as any],
+      schema: { params: dropIdParamSchema, body: joinDropBodySchema },
     },
-    C.joinDrop
+    C.joinDrop as any
   );
 
   r.post(
     "/drops/:id/leave",
-    { schema: { params: dropIdParamSchema } },
-    C.leaveDrop
+    { preHandler: [requireAuth as any], schema: { params: dropIdParamSchema } },
+    C.leaveDrop as any
   );
+
   r.post(
     "/drops/:id/claim",
     {
+      preHandler: [requireAuth as any],
       schema: {
         params: dropIdParamSchema,
         body: claimDropBodySchema,
         response: { 200: claimDropResponseSchema },
       },
     },
-    C.claimDrop
+    C.claimDrop as any
   );
 
-  r.post("/admin/drops", { schema: { body: createDropSchema } }, C.createDrop);
+  r.post(
+    "/admin/drops",
+    {
+      preHandler: [requireAuth as any, requireRoles("ADMIN") as any],
+      schema: { body: createDropSchema },
+    },
+    C.createDrop as any
+  );
+
   r.put(
     "/admin/drops/:id",
-    { schema: { params: dropIdParamSchema, body: updateDropSchema } },
-    C.updateDrop
+    {
+      preHandler: [requireAuth as any, requireRoles("ADMIN") as any],
+      schema: { params: dropIdParamSchema, body: updateDropSchema },
+    },
+    C.updateDrop as any
   );
+
   r.delete(
     "/admin/drops/:id",
-    { schema: { params: dropIdParamSchema } },
-    C.deleteDrop
+    {
+      preHandler: [requireAuth as any, requireRoles("ADMIN") as any],
+      schema: { params: dropIdParamSchema },
+    },
+    C.deleteDrop as any
   );
 }

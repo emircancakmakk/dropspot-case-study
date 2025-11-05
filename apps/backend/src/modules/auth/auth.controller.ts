@@ -8,13 +8,18 @@ export async function signup(
   reply: FastifyReply
 ) {
   const { email, password, fullName } = req.body
-  const result = await S.signup({ email, password, fullName})
-  return reply.code(200).send({
-    status: "success",
-    message: "Kullanıcı kaydı tamamlandı.",
-    user: result,
-  });
-  
+  const user = await S.signup({ email, password, fullName })
+  const accessToken = await reply.jwtSign({
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+  })
+  return reply.code(201).send({
+    status: 'success',
+    message: 'Kullanıcı kaydı tamamlandı.',
+    user,
+    accessToken,
+  })
 }
 
 export async function signin(
@@ -22,12 +27,16 @@ export async function signin(
   reply: FastifyReply
 ) {
   const { email, password } = req.body
-  const result = await S.signin({ email, password })
-  return reply.code(200).send(
-    {
-      status: "success",
-      message: "Giriş başarılı.",
-      user: result,
-    }
-  )
+  const user = await S.signin({ email, password })
+  const accessToken = await reply.jwtSign({
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+  })
+  return reply.code(200).send({
+    status: 'success',
+    message: 'Giriş başarılı.',
+    user,
+    accessToken,
+  })
 }
