@@ -45,8 +45,10 @@ model Waitlist {
   claimAt       DateTime?
   priorityScore Int       @default(0)
 
-  user User @relation(fields: [userId], references: [id])
-  drop Drop @relation(fields: [dropId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  drop Drop @relation(fields: [dropId], references: [id], onDelete: Cascade)
 
+
+  @@index([dropId, claimed, priorityScore, joinedAt])
   @@unique([userId, dropId])
 }

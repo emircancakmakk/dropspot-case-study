@@ -14,8 +14,4 @@ export default async function routes(app: FastifyInstance) {
   r.post('/auth/signin', {
     schema: { body: SigninBody }
   }, C.signin)
-
-
-  // örnek health
-  r.get('/health', {}, async () => ({ ok: true }))
 }
