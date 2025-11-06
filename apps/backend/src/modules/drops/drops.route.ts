@@ -10,7 +10,7 @@ import {
   joinDropResponseSchema,
   leaveDropResponseSchema,
 } from "./drops.schema";
-import { requireAuth, requireRoles } from "../auth/guards";
+import { requireAuth, requireRoles } from "../../shared/guards";
 
 export default async function routes(app: FastifyInstance) {
   const r = app.withTypeProvider<ZodTypeProvider>();
