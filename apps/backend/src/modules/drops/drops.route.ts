@@ -16,6 +16,8 @@ export default async function routes(app: FastifyInstance) {
   const r = app.withTypeProvider<ZodTypeProvider>();
 
   r.get("/drops", {}, C.getActiveDrops as any);
+  
+  r.get("/drops/:id", {}, C.getDrop as any);
 
   r.post(
     "/drops/:id/join",

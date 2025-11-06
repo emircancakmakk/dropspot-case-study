@@ -3,10 +3,9 @@ import {
   ClaimDropBody,
   CreateDropInput,
   DropIdParam,
-  DropListResponse,
   JoinDropBody,
   LeaveDropBody,
-  UpdateDropInput,
+  UpdateDropInput
 } from "./drops.schema";
 import * as S from "./drops.service";
 
@@ -85,7 +84,7 @@ export async function leaveDrop(
 }
 
 export async function claimDrop(
-  req: FastifyRequest<{ Params: DropIdParam; Body: ClaimDropBody}>,
+  req: FastifyRequest<{ Params: DropIdParam; Body: ClaimDropBody }>,
   reply: FastifyReply
 ) {
   const { id } = req.params;
@@ -96,3 +95,13 @@ export async function claimDrop(
   return reply.code(200).send(res);
 }
 
+export async function getDrop(
+  req: FastifyRequest<{ Params: DropIdParam }>,
+  reply: FastifyReply
+) {
+  const { id } = req.params;
+
+  const drop = await S.getDropById(id);
+
+  return reply.code(200).send(drop);
+}

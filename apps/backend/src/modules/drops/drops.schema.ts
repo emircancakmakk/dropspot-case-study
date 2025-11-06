@@ -1,3 +1,4 @@
+import { isAscii } from "buffer";
 import { z } from "zod";
 
 /**
@@ -60,6 +61,7 @@ export const createDropSchema = z.object({
   stock: z.number().int().positive("Stok pozitif bir tam sayı olmalı"),
   claimStart: z.string().datetime("Talep başlangıcı ISO tarih dizesi olmalı"),
   claimEnd: z.string().datetime("Talep bitişi ISO tarih dizesi olmalı"),
+  isActive: z.boolean().optional(),
 }).strict();
 
 /**

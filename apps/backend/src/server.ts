@@ -65,6 +65,6 @@ await app.register(async (scope) => {
   await dropRoutes(r);
 }, { prefix: "/api" });
 
-const port = Number(process.env.PORT ?? 3000);
+const port = Number(process.env.PORT ?? 5050);
 const host = process.env.HOST ?? "0.0.0.0";
 await app.listen({ port, host });

@@ -133,3 +133,11 @@ export async function claimDrop(userId: string, dropId: string) {
     return { status: "claimed" as const, claimCode: code };
   });
 }
+
+export async function getDropById(id: string) {
+  const drop = await R.findDropById(id);
+  if (!drop)
+    throw new AppError(404, "drop_not_found", "Drop bulunamadı.");
+
+  return drop;
+}
