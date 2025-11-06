@@ -9,6 +9,19 @@ export type Drop = {
   createdAt: string;
 };
 
+export type DropWithUserStatus = {
+  id: string;
+  title: string;
+  description?: string | null;
+  stock: number;
+  claimStart: string;
+  claimEnd: string;
+  isActive: boolean;
+  createdAt: string;
+  userJoined: boolean;
+  userClaimed: boolean;
+}
+
 export type User = {
   id: string;
   email: string;
@@ -50,4 +63,32 @@ export type ActionResponse = {
   success: boolean;
   error?: string;
   message?: string;
+};
+
+export type WaitlistItem = {
+  id: string;
+  joinedAt: string;
+  claimed: boolean;
+  userId: string;
+  dropId: string;
+  priorityScore: number;
+};
+
+export type ClaimDropResponse = {
+  status: "claimed" | "already_claimed";
+  claimCode: string;
+};
+
+export type JoinDropResponse = {
+  status: "joined" | "already_joined";
+  wait: {
+    id: string;
+    userId: string;
+    dropId: string;
+    joinedAt: string; // ISO
+  };
+};
+
+export type LeaveDropResponse = {
+  status: "left" | "not_in_waitlist";
 };

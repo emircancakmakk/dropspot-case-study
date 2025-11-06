@@ -1,12 +1,17 @@
-import { api } from "@/lib/api"
-import type { Drop } from "@/lib/types"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import DropActions from "@/components/drops/components/drop-actions";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { api } from "@/lib/api";
+import type { DropWithUserStatus } from "@/lib/types";
 
-export default async function DropDetail({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const drop = await api<Drop>(`/api/drops/${id}`)
+export default async function DropDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const drop = await api<DropWithUserStatus>(`/api/drops/${id}`);
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -33,16 +38,33 @@ export default async function DropDetail({ params }: { params: Promise<{ id: str
             </div>
             <div>
               <div className="text-muted-foreground">Claim Başlangıcı</div>
-              <div className="font-medium">{new Date(drop.claimStart).toLocaleString("tr-TR")}</div>
+              <div className="font-medium">
+                {new Date(drop.claimStart).toLocaleString("tr-TR")}
+              </div>
             </div>
             <div>
               <div className="text-muted-foreground">Claim Bitişi</div>
-              <div className="font-medium">{new Date(drop.claimEnd).toLocaleString("tr-TR")}</div>
+              <div className="font-medium">
+                {new Date(drop.claimEnd).toLocaleString("tr-TR")}
+              </div>
             </div>
           </div>
+
           <Separator />
+
+          <DropActions
+            drop={{
+              id: drop.id,
+              claimStart: drop.claimStart,
+              claimEnd: drop.claimEnd,
+              stock: drop.stock,
+              isActive: drop.isActive,
+            }}
+            initialInWaitlist={drop.userJoined}
+            initialClaimed={drop.userClaimed}
+          />
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
