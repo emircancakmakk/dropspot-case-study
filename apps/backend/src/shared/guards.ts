@@ -1,6 +1,6 @@
 // src/modules/auth/guards.ts
 import type { FastifyRequest, FastifyReply } from "fastify";
-import type { Role } from "../../types/fastify-jwt";
+import type { Role } from "../types/fastify-jwt";
 
 export async function requireAuth(req: FastifyRequest, reply: FastifyReply) {
   try {

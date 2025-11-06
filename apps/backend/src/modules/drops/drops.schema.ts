@@ -1,24 +1,14 @@
-import { isAscii } from "buffer";
 import { z } from "zod";
 
-/**
- * Parametrelerde kullanılacak ID şeması
- */
 export const dropIdParamSchema = z.object({
   id: z.string().cuid("Geçersiz drop ID'si"),
 }).strict();
 
-/**
- * Drop claim etme yanıt modeli
- */
 export const claimDropResponseSchema = z.object({
   status: z.enum(["claimed", "already_claimed"]),
   claimCode: z.string(),
 });
 
-/**
- * Drop'a katılma yanıt modeli
- */
 export const joinDropResponseSchema = z.object({
   status: z.enum(["joined", "already_joined"]),
   wait: z.object({
@@ -29,9 +19,6 @@ export const joinDropResponseSchema = z.object({
   })
 });
 
-/**
- * Yeni drop oluşturma isteği
- */
 export const createDropSchema = z.object({
   title: z.string().min(1, "Başlık gerekli"),
   description: z.string().optional(),
@@ -41,15 +28,8 @@ export const createDropSchema = z.object({
   isActive: z.boolean().optional(),
 }).strict();
 
-/**
- * Güncelleme isteği (partial)
- */
 export const updateDropSchema = createDropSchema.partial().strict();
 
-/**
- * Drop yanıt modeli
- * (Prisma modelinden türetilmiş ama client’a gönderilebilir alanlarla sınırlı)
- */
 export const dropResponseSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -61,21 +41,13 @@ export const dropResponseSchema = z.object({
   createdAt: z.string(),
 });
 
-/**
- * Drop'tan ayrılma yanıt modeli
- */
 export const leaveDropResponseSchema = z.object({
   status: z.enum(["left", "not_in_waitlist"]),
 });
 
-/**
- * Listeleme çıktısı
- */
+
 export const dropListResponseSchema = z.array(dropResponseSchema);
 
-/**
- * Tip çıkarımları (controller ve route tipleri için)
- */
 export type DropIdParam = z.infer<typeof dropIdParamSchema>;
 export type CreateDropInput = z.infer<typeof createDropSchema>;
 export type UpdateDropInput = z.infer<typeof updateDropSchema>;

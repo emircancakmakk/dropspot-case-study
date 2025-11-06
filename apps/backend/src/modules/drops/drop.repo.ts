@@ -138,7 +138,6 @@ export function countClaimed(tx: Prisma.TransactionClient, dropId: string) {
   return tx.waitlist.count({ where: { dropId, claimed: true } });
 }
 
-// Yarış güvenliği: yalnızca claimed=false satırı güncellensin
 export function markClaimedIfNot(
   tx: Prisma.TransactionClient,
   waitlistId: string,

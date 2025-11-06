@@ -5,7 +5,7 @@ export async function listUserClaims(userId: string) {
   const rows = await R.findClaimsByUser(userId);
 
   return rows
-    .filter(r => r.claimCode && r.claimAt && r.drop) // eksikleri at
+    .filter(r => r.claimCode && r.claimAt && r.drop)
     .map(r => ({
       dropId: r.drop.id,
       dropTitle: r.drop.title,

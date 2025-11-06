@@ -20,7 +20,6 @@ await app.register(jwt, {
   sign: { expiresIn: process.env.JWT_EXPIRES_IN || "15m" },
 });
 
-// Hata yakalama
 app.setErrorHandler((err, req, reply) => {
   const jwtCodes = new Set([
     "FST_JWT_NO_AUTHORIZATION_IN_HEADER",
