@@ -238,6 +238,47 @@ yarn workspace web dev
 ![Admin edit drop](apps/web/public/screens/admin-edit-drop.png)
 
 
+## Test ve Kalite
+
+### Backend Testleri
+
+**Unit Test:**
+- `apps/backend/src/shared/priority.test.ts`: `computePriorityScore` fonksiyonu test edilir
+- Deterministik skor hesaplama, farklı girdiler için farklı sonuçlar, tutarlılık kontrolü
+
+**Integration Test:**
+- `apps/backend/src/modules/drops/drops.integration.test.ts`: Signup → Join → Claim akışı test edilir
+- Idempotency testleri: join/leave/claim işlemlerinin tekrar çağrılması durumunda aynı sonucu vermesi
+- Edge case'ler: stok doluyken claim denemesi, claim penceresi kapalıyken işlem yapma
+
+**Çalıştırma:**
+```bash
+cd apps/backend
+yarn test
+```
+
+### Frontend Testleri
+
+**Component Testleri:**
+- `apps/web/components/ui/button.test.tsx`: Button component'i test edilir
+  - Render, variant'lar, size'lar, disabled durumu, click event'leri
+- `apps/web/components/drops/components/drop-actions.test.tsx`: DropActions component'i test edilir
+  - Join/leave/claim butonları, state yönetimi, action çağrıları
+
+**Çalıştırma:**
+```bash
+cd apps/web
+yarn test
+```
+
+### Test Kapsamı
+
+- Idempotency: Join, leave, claim işlemlerinin tekrar çağrılması durumunda tutarlı sonuçlar
+- Edge cases: Stok doluyken claim, claim penceresi kapalıyken işlem
+- Component rendering: UI component'lerinin doğru render edilmesi
+- User interactions: Button click'leri, form submit'leri
+
+
 ## Teknik Tercihler ve Gerekçeler
 
 - Fastify: performans, tip güvenliği (zod ile), plugin ekosistemi
