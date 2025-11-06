@@ -1,16 +1,14 @@
-
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import Link from "next/link"
-import UserMenu from "./user-menu"
+} from "@/components/ui/navigation-menu";
+import Link from "next/link";
+import UserMenu from "./user-menu";
 
 export function Navbar() {
-
   return (
     <header className="border-b">
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
@@ -22,26 +20,27 @@ export function Navbar() {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <Link href="/">
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Aktif Droplar
-                </NavigationMenuLink>
-              </Link>
+              <NavigationMenuLink
+                asChild
+                className={navigationMenuTriggerStyle()}
+              >
+                <Link href="/">Aktif Droplar</Link>
+              </NavigationMenuLink>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <Link href="/claim">
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Claim Kodlarım
-                </NavigationMenuLink>
-              </Link>
+              <NavigationMenuLink
+                asChild
+                className={navigationMenuTriggerStyle()}
+              >
+                <Link href="/claim">Claim Kodlarım</Link>
+              </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
 
         <UserMenu />
-
       </div>
     </header>
-  )
+  );
 }
