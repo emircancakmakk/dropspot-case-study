@@ -59,12 +59,15 @@ export async function joinDrop(
   reply: FastifyReply
 ) {
   const { id } = req.params;
-  const userId = req.user.id;
+  const userId = req.user.sub;
 
-  const w = await S.joinWaitlist(userId, id);
+  console.log("User ID:", userId);
+
+  const { wait, status } = await S.joinWaitlist(userId, id);
 
   return reply.code(200).send({
-    wait: { ...w, joinedAt: w.joinedAt.toISOString() },
+    status,
+    wait: { ...wait, joinedAt: wait.joinedAt.toISOString() },
   });
 }
 
@@ -73,11 +76,12 @@ export async function leaveDrop(
   reply: FastifyReply
 ) {
   const { id } = req.params;
-  const userId = req.user.id;
+  const userId = req.user.sub;
 
-  await S.leaveWaitlist(userId, id);
+  // Service "left" | "not_in_waitlist" döndürsün
+  const status = await S.leaveWaitlist(userId, id);
 
-  return reply.code(204).send();
+  return reply.code(200).send({ status });
 }
 
 export async function claimDrop(
@@ -85,7 +89,7 @@ export async function claimDrop(
   reply: FastifyReply
 ) {
   const { id } = req.params;
-  const userId = req.user.id
+  const userId = req.user.sub;
 
   const res = await S.claimDrop(userId, id);
 
@@ -97,8 +101,9 @@ export async function getDrop(
   reply: FastifyReply
 ) {
   const { id } = req.params;
+  const userId = req.user.sub;
 
-  const drop = await S.getDropById(id);
+  const drop = await S.getDropWithUserStatus(id, userId);
 
   return reply.code(200).send(drop);
 }

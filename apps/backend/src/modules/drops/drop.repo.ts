@@ -44,7 +44,7 @@ export function deleteDropById(id: string) {
 export function isDropActive(dropId: string) {
   return prisma.drop.findUnique({
     where: { id: dropId },
-    select: { isActive: true }
+    select: { isActive: true },
   });
 }
 
@@ -89,19 +89,40 @@ export function getWaitlistClaimState(userId: string, dropId: string) {
 export function getDropForClaim(tx: Prisma.TransactionClient, dropId: string) {
   return tx.drop.findUnique({
     where: { id: dropId },
-    select: { id: true, isActive: true, claimStart: true, claimEnd: true, stock: true },
+    select: {
+      id: true,
+      isActive: true,
+      claimStart: true,
+      claimEnd: true,
+      stock: true,
+    },
   });
 }
 
-export function getWaitlistEntry(tx: Prisma.TransactionClient, userId: string, dropId: string) {
+export function getWaitlistEntry(
+  tx: Prisma.TransactionClient,
+  userId: string,
+  dropId: string
+) {
   return tx.waitlist.findUnique({
     where: { userId_dropId: { userId, dropId } },
-    select: { id: true, joinedAt: true, priorityScore: true, claimed: true, claimCode: true },
+    select: {
+      id: true,
+      joinedAt: true,
+      priorityScore: true,
+      claimed: true,
+      claimCode: true,
+    },
   });
 }
 
 // Sıradan önce kaç kişi var? priorityScore DESC, eşitlikte joinedAt ASC
-export function countBeforeMe(tx: Prisma.TransactionClient, dropId: string, myScore: number, myJoinedAt: Date) {
+export function countBeforeMe(
+  tx: Prisma.TransactionClient,
+  dropId: string,
+  myScore: number,
+  myJoinedAt: Date
+) {
   return tx.waitlist.count({
     where: {
       dropId,
@@ -118,7 +139,11 @@ export function countClaimed(tx: Prisma.TransactionClient, dropId: string) {
 }
 
 // Yarış güvenliği: yalnızca claimed=false satırı güncellensin
-export function markClaimedIfNot(tx: Prisma.TransactionClient, waitlistId: string, code: string) {
+export function markClaimedIfNot(
+  tx: Prisma.TransactionClient,
+  waitlistId: string,
+  code: string
+) {
   return tx.waitlist.updateMany({
     where: { id: waitlistId, claimed: false },
     data: { claimed: true, claimAt: new Date(), claimCode: code },
@@ -127,4 +152,20 @@ export function markClaimedIfNot(tx: Prisma.TransactionClient, waitlistId: strin
 
 export function findAllDrops() {
   return prisma.drop.findMany();
+}
+
+export async function isUserInWaitlist(dropId: string, userId: string) {
+  const exists = await prisma.waitlist.findFirst({
+    where: { dropId, userId },
+    select: { id: true },
+  });
+  return Boolean(exists);
+}
+
+export async function hasUserClaimed(dropId: string, userId: string) {
+  const entry = await prisma.waitlist.findUnique({
+    where: { userId_dropId: { userId, dropId } },
+    select: { claimed: true },
+  });
+  return entry?.claimed ?? false;
 }

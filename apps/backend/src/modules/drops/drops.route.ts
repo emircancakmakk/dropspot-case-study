@@ -7,6 +7,8 @@ import {
   createDropSchema,
   updateDropSchema,
   claimDropResponseSchema,
+  joinDropResponseSchema,
+  leaveDropResponseSchema,
 } from "./drops.schema";
 import { requireAuth, requireRoles } from "../auth/guards";
 
@@ -15,22 +17,30 @@ export default async function routes(app: FastifyInstance) {
 
   r.get("/drops", {}, C.getActiveDrops as any);
 
-  r.get("/drops/:id", {}, C.getDrop as any);
+  r.get("/drops/:id", {
+    preHandler: [requireAuth as any],
+  }, C.getDrop as any);
 
   r.post(
     "/drops/:id/join",
     {
       preHandler: [requireAuth as any],
-      schema: { params: dropIdParamSchema },
+      schema: {
+        params: dropIdParamSchema,
+        response: { 200: joinDropResponseSchema },
+      },
     },
     C.joinDrop as any
   );
-
+  
   r.post(
     "/drops/:id/leave",
     {
       preHandler: [requireAuth as any],
-      schema: { params: dropIdParamSchema },
+      schema: {
+        params: dropIdParamSchema,
+        response: { 200: leaveDropResponseSchema },
+      },
     },
     C.leaveDrop as any
   );

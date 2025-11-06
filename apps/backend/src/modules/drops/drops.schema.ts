@@ -20,13 +20,12 @@ export const claimDropResponseSchema = z.object({
  * Drop'a katılma yanıt modeli
  */
 export const joinDropResponseSchema = z.object({
+  status: z.enum(["joined", "already_joined"]),
   wait: z.object({
     id: z.string(),
     userId: z.string(),
     dropId: z.string(),
-    priorityScore: z.number(),
     joinedAt: z.string().datetime(),
-    claimed: z.boolean(),
   })
 });
 
@@ -60,6 +59,13 @@ export const dropResponseSchema = z.object({
   claimEnd: z.string(),
   isActive: z.boolean(),
   createdAt: z.string(),
+});
+
+/**
+ * Drop'tan ayrılma yanıt modeli
+ */
+export const leaveDropResponseSchema = z.object({
+  status: z.enum(["left", "not_in_waitlist"]),
 });
 
 /**

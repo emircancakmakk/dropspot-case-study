@@ -5,6 +5,12 @@ import { CreateDropInput, DropIdParam, UpdateDropInput } from "./drops.schema";
 import { prisma } from "../../plugins/prisma";
 import * as crypto from "crypto";
 
+export type JoinResult = { status: "joined" | "already_joined"; wait: {
+  id: string; userId: string; dropId: string; priorityScore: number; joinedAt: Date; claimed: boolean; claimCode: string | null;
+}};
+export type LeaveResult = "left" | "not_in_waitlist";
+
+
 function genCode() {
   return crypto.randomBytes(4).toString("hex").toUpperCase();
 }
@@ -56,40 +62,55 @@ export async function deleteDrop(id: string) {
   await R.deleteDropById(id);
 }
 
-export async function joinWaitlist(userId: string, dropId: string) {
-  const drop = await R.isDropActive(dropId);
 
-  if (!drop) {
-    throw new AppError(404, "drop_not_found", "Drop bulunamadı.");
-  }
+export async function joinWaitlist(userId: string, dropId: string): Promise<JoinResult> {
+  return prisma.$transaction(async (tx) => {
+    const drop = await tx.drop.findUnique({ where: { id: dropId } });
+    if (!drop) throw new AppError(404, "drop_not_found", "Drop bulunamadı.");
+    if (!drop.isActive) throw new AppError(400, "drop_inactive", "Drop aktif değil.");
 
-  if (!drop.isActive) {
-    throw new AppError(400, "drop_inactive", "Drop aktif değil.");
-  }
+    const existing = await tx.waitlist.findUnique({
+      where: { userId_dropId: { userId, dropId } },
+    });
+    if (existing) return { status: "already_joined", wait: existing };
 
-  const priorityScore = computePriorityScore(userId, dropId);
+    const priorityScore = computePriorityScore(userId, dropId);
 
-  const waitEntry = await R.upsertWaitlist({
-    userId,
-    dropId,
-    priorityScore,
+    try {
+      const wait = await tx.waitlist.create({
+        data: { userId, dropId, priorityScore },
+      });
+      return { status: "joined", wait };
+    } catch (err: any) {
+      if (err?.code === "P2002") {
+        const again = await tx.waitlist.findUnique({
+          where: { userId_dropId: { userId, dropId } },
+        });
+        if (again) return { status: "already_joined", wait: again };
+      }
+      throw err;
+    }
   });
-
-  return waitEntry;
 }
 
-export async function leaveWaitlist(userId: string, dropId: string) {
-  const state = await R.getWaitlistClaimState(userId, dropId);
+export async function leaveWaitlist(userId: string, dropId: string): Promise<LeaveResult> {
+  return prisma.$transaction(async (tx) => {
+    const row = await tx.waitlist.findUnique({
+      where: { userId_dropId: { userId, dropId } },
+      select: { id: true, claimed: true },
+    });
 
-  if (state?.claimed) {
-    throw new AppError(
-      409,
-      "already_claimed",
-      "Claim edilmiş kayıttan ayrılamazsınız."
-    );
-  }
+    if (!row) return "not_in_waitlist";
+    if (row.claimed) {
+      throw new AppError(409, "already_claimed", "Claim edilmiş kayıttan ayrılamazsınız.");
+    }
 
-  await R.deleteWaitlistEntry(userId, dropId);
+    await tx.waitlist.delete({
+      where: { userId_dropId: { userId, dropId } },
+    });
+
+    return "left";
+  });
 }
 
 export async function claimDrop(userId: string, dropId: string) {
@@ -112,7 +133,6 @@ export async function claimDrop(userId: string, dropId: string) {
         "Bekleme listesinde değilsiniz."
       );
 
-    // Daha önce claim etmişse aynı kodla dön
     if (me.claimed && me.claimCode) {
       return { status: "already_claimed" as const, claimCode: me.claimCode };
     }
@@ -133,7 +153,6 @@ export async function claimDrop(userId: string, dropId: string) {
 
     const updated = await R.markClaimedIfNot(tx, me.id, code);
     if (updated.count === 0) {
-      // Yarış: tekrar oku, idempotent yanıt ver
       const again = await R.getWaitlistEntry(tx, userId, dropId);
       if (again?.claimed && again.claimCode) {
         return {
@@ -157,4 +176,14 @@ export async function getDropById(id: string) {
 
 export async function listAllDrops() {
   return R.findAllDrops();
+}
+
+export async function getDropWithUserStatus(dropId: string, userId: string) {
+  const drop = await R.findDropById(dropId);
+  if (!drop) throw new AppError(404, "drop_not_found", "Drop bulunamadı.");
+
+  const userJoined = await R.isUserInWaitlist(dropId, userId);
+  const userClaimed = await R.hasUserClaimed(dropId, userId);
+
+  return { ...drop, userJoined, userClaimed };
 }
