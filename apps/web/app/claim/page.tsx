@@ -1,7 +1,15 @@
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { redirect } from "next/navigation";
 
 type ClaimItem = {
   dropId: string;
@@ -14,7 +22,15 @@ type ClaimItem = {
 export const dynamic = "force-dynamic";
 
 export default async function ClaimsPage() {
-  const claims = await api<ClaimItem[]>("/api/me/claims", { cache: "no-store" });
+  let claims: ClaimItem[] = [];
+  try {
+    claims = await api<ClaimItem[]>("/api/me/claims", { cache: "no-store" });
+  } catch (e) {
+    if (e instanceof ApiError && e.statusCode === 401) {
+      redirect(`/signin`);
+    }
+    throw e;
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -43,7 +59,9 @@ export default async function ClaimsPage() {
                   <TableRow key={c.claimCode}>
                     <TableCell className="font-medium">{c.dropTitle}</TableCell>
                     <TableCell>
-                      <code className="rounded bg-muted px-2 py-1 text-sm">{c.claimCode}</code>
+                      <code className="rounded bg-muted px-2 py-1 text-sm">
+                        {c.claimCode}
+                      </code>
                     </TableCell>
                     <TableCell>
                       {new Date(c.claimAt).toLocaleString("tr-TR")}

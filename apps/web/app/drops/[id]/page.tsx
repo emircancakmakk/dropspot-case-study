@@ -2,16 +2,28 @@ import DropActions from "@/components/drops/components/drop-actions";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 import type { DropWithUserStatus } from "@/lib/types";
+import { redirect } from "next/navigation";
 
 export default async function DropDetail({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+
   const { id } = await params;
-  const drop = await api<DropWithUserStatus>(`/api/drops/${id}`);
+
+  let drop;
+
+  try {
+    drop = await api<DropWithUserStatus>(`/api/drops/${id}`);
+  } catch (e) {
+    if(e instanceof ApiError && e.statusCode === 401) {
+      redirect(`/signin`);
+    }
+    throw e;
+  }
 
   return (
     <div className="mx-auto max-w-2xl">
