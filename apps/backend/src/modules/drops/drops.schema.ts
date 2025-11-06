@@ -9,28 +9,6 @@ export const dropIdParamSchema = z.object({
 }).strict();
 
 /**
- * Drop'a katılma isteği gövdesi
- */
-export const joinDropBodySchema = z.object({
-  userId: z.string().min(1),
-}).strict();
-
-/**
- * Drop'tan ayrılma isteği gövdesi
- */
-export const leaveDropBodySchema = z.object({
-  userId: z.string().min(1),
-}).strict();
-
-/**
- * Drop claim etme isteği gövdesi
- */
-export const claimDropBodySchema = z.object({
-  userId: z.string().min(1),
-}).strict();
-
-
-/**
  * Drop claim etme yanıt modeli
  */
 export const claimDropResponseSchema = z.object({
@@ -97,8 +75,5 @@ export type CreateDropInput = z.infer<typeof createDropSchema>;
 export type UpdateDropInput = z.infer<typeof updateDropSchema>;
 export type DropResponse = z.infer<typeof dropResponseSchema>;
 export type DropListResponse = z.infer<typeof dropListResponseSchema>;
-export type JoinDropBody = z.infer<typeof joinDropBodySchema>;
-export type LeaveDropBody = z.infer<typeof leaveDropBodySchema>;
-export type ClaimDropBody = z.infer<typeof claimDropBodySchema>;
 
 

@@ -124,3 +124,7 @@ export function markClaimedIfNot(tx: Prisma.TransactionClient, waitlistId: strin
     data: { claimed: true, claimAt: new Date(), claimCode: code },
   });
 }
+
+export function findAllDrops() {
+  return prisma.drop.findMany();
+}

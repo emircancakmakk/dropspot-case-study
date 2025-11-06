@@ -1,10 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
-  ClaimDropBody,
   CreateDropInput,
   DropIdParam,
-  JoinDropBody,
-  LeaveDropBody,
   UpdateDropInput
 } from "./drops.schema";
 import * as S from "./drops.service";
@@ -58,11 +55,11 @@ export async function deleteDrop(
 }
 
 export async function joinDrop(
-  req: FastifyRequest<{ Params: DropIdParam; Body: JoinDropBody }>,
+  req: FastifyRequest<{ Params: DropIdParam }>,
   reply: FastifyReply
 ) {
   const { id } = req.params;
-  const userId = req.body.userId;
+  const userId = req.user.id;
 
   const w = await S.joinWaitlist(userId, id);
 
@@ -72,11 +69,11 @@ export async function joinDrop(
 }
 
 export async function leaveDrop(
-  req: FastifyRequest<{ Params: DropIdParam; Body: LeaveDropBody }>,
+  req: FastifyRequest<{ Params: DropIdParam }>,
   reply: FastifyReply
 ) {
   const { id } = req.params;
-  const userId = req.body.userId;
+  const userId = req.user.id;
 
   await S.leaveWaitlist(userId, id);
 
@@ -84,11 +81,11 @@ export async function leaveDrop(
 }
 
 export async function claimDrop(
-  req: FastifyRequest<{ Params: DropIdParam; Body: ClaimDropBody }>,
+  req: FastifyRequest<{ Params: DropIdParam }>,
   reply: FastifyReply
 ) {
   const { id } = req.params;
-  const userId = req.body.userId;
+  const userId = req.user.id
 
   const res = await S.claimDrop(userId, id);
 
@@ -104,4 +101,13 @@ export async function getDrop(
   const drop = await S.getDropById(id);
 
   return reply.code(200).send(drop);
+}
+
+export async function getAllDrops(
+  req: FastifyRequest,
+  reply: FastifyReply
+) {
+  const result = await S.listAllDrops();
+
+  return reply.code(200).send(result);
 }

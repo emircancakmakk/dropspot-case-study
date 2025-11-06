@@ -3,7 +3,7 @@ import { computePriorityScore } from "../../shared/priority";
 import * as R from "./drop.repo";
 import { CreateDropInput, DropIdParam, UpdateDropInput } from "./drops.schema";
 import { prisma } from "../../plugins/prisma";
-import * as crypto from 'crypto';
+import * as crypto from "crypto";
 
 function genCode() {
   return crypto.randomBytes(4).toString("hex").toUpperCase();
@@ -51,23 +51,19 @@ export async function updateDrop(id: string, input: UpdateDropInput) {
 
 export async function deleteDrop(id: string) {
   const exists = await R.findDropById(id);
-  if (!exists)
-    throw new AppError(404, "drop_not_found", "Drop bulunamadı.");
+  if (!exists) throw new AppError(404, "drop_not_found", "Drop bulunamadı.");
 
   await R.deleteDropById(id);
 }
 
-export async function joinWaitlist(userId: string, dropId: string)
-{
+export async function joinWaitlist(userId: string, dropId: string) {
   const drop = await R.isDropActive(dropId);
 
-  if (!drop)
-  {
+  if (!drop) {
     throw new AppError(404, "drop_not_found", "Drop bulunamadı.");
   }
 
-  if (!drop.isActive)
-  {
+  if (!drop.isActive) {
     throw new AppError(400, "drop_inactive", "Drop aktif değil.");
   }
 
@@ -82,12 +78,15 @@ export async function joinWaitlist(userId: string, dropId: string)
   return waitEntry;
 }
 
-export async function leaveWaitlist(userId: string, dropId: string)
-{
+export async function leaveWaitlist(userId: string, dropId: string) {
   const state = await R.getWaitlistClaimState(userId, dropId);
 
   if (state?.claimed) {
-    throw new AppError(409, "already_claimed", "Claim edilmiş kayıttan ayrılamazsınız.");
+    throw new AppError(
+      409,
+      "already_claimed",
+      "Claim edilmiş kayıttan ayrılamazsınız."
+    );
   }
 
   await R.deleteWaitlistEntry(userId, dropId);
@@ -97,7 +96,8 @@ export async function claimDrop(userId: string, dropId: string) {
   return prisma.$transaction(async (tx) => {
     const drop = await R.getDropForClaim(tx, dropId);
     if (!drop) throw new AppError(404, "drop_not_found", "Drop bulunamadı.");
-    if (!drop.isActive) throw new AppError(409, "drop_inactive", "Drop aktif değil.");
+    if (!drop.isActive)
+      throw new AppError(409, "drop_inactive", "Drop aktif değil.");
 
     const now = new Date();
     if (now < drop.claimStart || now > drop.claimEnd) {
@@ -105,18 +105,29 @@ export async function claimDrop(userId: string, dropId: string) {
     }
 
     const me = await R.getWaitlistEntry(tx, userId, dropId);
-    if (!me) throw new AppError(404, "not_on_waitlist", "Bekleme listesinde değilsiniz.");
+    if (!me)
+      throw new AppError(
+        404,
+        "not_on_waitlist",
+        "Bekleme listesinde değilsiniz."
+      );
 
     // Daha önce claim etmişse aynı kodla dön
     if (me.claimed && me.claimCode) {
       return { status: "already_claimed" as const, claimCode: me.claimCode };
     }
 
-    const beforeMe = await R.countBeforeMe(tx, dropId, me.priorityScore, me.joinedAt);
+    const beforeMe = await R.countBeforeMe(
+      tx,
+      dropId,
+      me.priorityScore,
+      me.joinedAt
+    );
     const claimedCount = await R.countClaimed(tx, dropId);
 
     const eligible = beforeMe < drop.stock && claimedCount < drop.stock;
-    if (!eligible) throw new AppError(409, "not_eligible", "Sıranız stok içinde değil.");
+    if (!eligible)
+      throw new AppError(409, "not_eligible", "Sıranız stok içinde değil.");
 
     const code = genCode();
 
@@ -125,7 +136,10 @@ export async function claimDrop(userId: string, dropId: string) {
       // Yarış: tekrar oku, idempotent yanıt ver
       const again = await R.getWaitlistEntry(tx, userId, dropId);
       if (again?.claimed && again.claimCode) {
-        return { status: "already_claimed" as const, claimCode: again.claimCode };
+        return {
+          status: "already_claimed" as const,
+          claimCode: again.claimCode,
+        };
       }
       throw new AppError(409, "race_conflict", "Yarış durumu, tekrar deneyin.");
     }
@@ -136,8 +150,11 @@ export async function claimDrop(userId: string, dropId: string) {
 
 export async function getDropById(id: string) {
   const drop = await R.findDropById(id);
-  if (!drop)
-    throw new AppError(404, "drop_not_found", "Drop bulunamadı.");
+  if (!drop) throw new AppError(404, "drop_not_found", "Drop bulunamadı.");
 
   return drop;
+}
+
+export async function listAllDrops() {
+  return R.findAllDrops();
 }

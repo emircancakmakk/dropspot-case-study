@@ -6,8 +6,6 @@ import {
   dropIdParamSchema,
   createDropSchema,
   updateDropSchema,
-  joinDropBodySchema,
-  claimDropBodySchema,
   claimDropResponseSchema,
 } from "./drops.schema";
 import { requireAuth, requireRoles } from "../auth/guards";
@@ -16,21 +14,24 @@ export default async function routes(app: FastifyInstance) {
   const r = app.withTypeProvider<ZodTypeProvider>();
 
   r.get("/drops", {}, C.getActiveDrops as any);
-  
+
   r.get("/drops/:id", {}, C.getDrop as any);
 
   r.post(
     "/drops/:id/join",
     {
       preHandler: [requireAuth as any],
-      schema: { params: dropIdParamSchema, body: joinDropBodySchema },
+      schema: { params: dropIdParamSchema },
     },
     C.joinDrop as any
   );
 
   r.post(
     "/drops/:id/leave",
-    { preHandler: [requireAuth as any], schema: { params: dropIdParamSchema } },
+    {
+      preHandler: [requireAuth as any],
+      schema: { params: dropIdParamSchema },
+    },
     C.leaveDrop as any
   );
 
@@ -40,7 +41,6 @@ export default async function routes(app: FastifyInstance) {
       preHandler: [requireAuth as any],
       schema: {
         params: dropIdParamSchema,
-        body: claimDropBodySchema,
         response: { 200: claimDropResponseSchema },
       },
     },
@@ -54,6 +54,14 @@ export default async function routes(app: FastifyInstance) {
       schema: { body: createDropSchema },
     },
     C.createDrop as any
+  );
+
+  r.get(
+    "/admin/drops",
+    {
+      preHandler: [requireAuth as any, requireRoles("ADMIN") as any],
+    },
+    C.getAllDrops as any
   );
 
   r.put(
