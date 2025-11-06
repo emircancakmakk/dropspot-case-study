@@ -16,7 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -29,7 +30,7 @@ function SubmitButton() {
 }
 
 export default function SignUpPage() {
-  const [state, formAction] = useFormState(signUpAction, null);
+  const [state, formAction] = useActionState(signUpAction, null);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">

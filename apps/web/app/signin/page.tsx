@@ -1,12 +1,9 @@
 // app/signin/page.tsx
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
 import { signInAction } from "@/actions/auth";
-import Link from "next/link";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -15,8 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -29,7 +30,7 @@ function SubmitButton() {
 }
 
 export default function SignInPage() {
-  const [state, formAction] = useFormState(signInAction, null);
+  const [state, formAction] = useActionState(signInAction, null);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">

@@ -41,6 +41,10 @@ function isClaimOpen(startISO: string, endISO: string) {
   return now >= new Date(startISO) && now <= new Date(endISO);
 }
 
+function isClaimEnded(endISO: string) {
+  return new Date() > new Date(endISO);
+}
+
 export default function DropActions({
   drop,
   initialInWaitlist = false,
@@ -154,7 +158,14 @@ export default function DropActions({
 
   return (
     <div className="flex flex-wrap gap-2">
-      {inWaitlist ? (
+      {claimed ? (
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Claim kodun:</span>
+          <code className="rounded bg-muted px-2 py-1 text-sm">
+            {claimCode ?? "—"}
+          </code>
+        </div>
+      ) : inWaitlist ? (
         <>
           <Button
             variant="secondary"
@@ -163,6 +174,7 @@ export default function DropActions({
           >
             Bekleme listesinden ayrıl
           </Button>
+  
           <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -176,18 +188,26 @@ export default function DropActions({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-
+  
           <Button onClick={onClaim} disabled={!canClaim}>
             {canClaim ? "Claim et" : "Claim kapalı"}
           </Button>
         </>
       ) : (
-        <Button onClick={onJoin}>Bekleme listesine katıl</Button>
+        <>
+          {!isClaimEnded(drop.claimEnd) ? (
+            <Button onClick={onJoin}>Bekleme listesine katıl</Button>
+          ) : (
+            <span className="text-sm text-muted-foreground">
+              Claim süresi bitti
+            </span>
+          )}
+        </>
       )}
-
-      {claimCode && (
+  
+      {claimCode && !claimed && (
         <code className="rounded bg-muted px-2 py-1 text-sm">{claimCode}</code>
       )}
     </div>
-  );
+  );  
 }
