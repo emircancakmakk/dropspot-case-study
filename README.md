@@ -13,9 +13,9 @@ DropSpot, sınırlı stokla yayınlanan ürünler/etkinlikler için adil ve öl�
 - DB: PostgreSQL (Docker Compose ile)
 - Kimlik Doğrulama: JWT
 - Idempotency ve Adalet:
-  - Unique constraint ve upsert/transaction kullanımı
-  - Claim sırasında satır kilidi (SELECT … FOR UPDATE) ve stok/sıraya göre seçim
-  - Tekil `claimCode` üretimi ve idempotent dönüş
+  - Unique constraint ve transaction kullanımı
+  - Claim sırasında satır kilidi yerine atomik koşullu UPDATE (`WHERE claimed=false`) kullanımı
+  - Tekil `claimCode` üretimi ve idempotent yanıt garantisi
 
 - Not: `markClaimedIfNot` fonksiyonu `updateMany({ where: { claimed: false } })`
 kullanarak atomic check-and-update uygular. Bu desen PostgreSQL’de row-level lock gerektirmez.
