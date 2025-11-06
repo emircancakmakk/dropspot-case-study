@@ -9,6 +9,6 @@
       "outDir": "dist",
       "types": ["node"]
     },
-    "include": ["src"]
+    "include": ["src", "../web/actions"]
   }
   

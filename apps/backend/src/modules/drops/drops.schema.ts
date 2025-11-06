@@ -1,3 +1,4 @@
+import { isAscii } from "buffer";
 import { z } from "zod";
 
 /**
@@ -6,28 +7,6 @@ import { z } from "zod";
 export const dropIdParamSchema = z.object({
   id: z.string().cuid("Geçersiz drop ID'si"),
 }).strict();
-
-/**
- * Drop'a katılma isteği gövdesi
- */
-export const joinDropBodySchema = z.object({
-  userId: z.string().min(1),
-}).strict();
-
-/**
- * Drop'tan ayrılma isteği gövdesi
- */
-export const leaveDropBodySchema = z.object({
-  userId: z.string().min(1),
-}).strict();
-
-/**
- * Drop claim etme isteği gövdesi
- */
-export const claimDropBodySchema = z.object({
-  userId: z.string().min(1),
-}).strict();
-
 
 /**
  * Drop claim etme yanıt modeli
@@ -41,13 +20,12 @@ export const claimDropResponseSchema = z.object({
  * Drop'a katılma yanıt modeli
  */
 export const joinDropResponseSchema = z.object({
+  status: z.enum(["joined", "already_joined"]),
   wait: z.object({
     id: z.string(),
     userId: z.string(),
     dropId: z.string(),
-    priorityScore: z.number(),
     joinedAt: z.string().datetime(),
-    claimed: z.boolean(),
   })
 });
 
@@ -60,6 +38,7 @@ export const createDropSchema = z.object({
   stock: z.number().int().positive("Stok pozitif bir tam sayı olmalı"),
   claimStart: z.string().datetime("Talep başlangıcı ISO tarih dizesi olmalı"),
   claimEnd: z.string().datetime("Talep bitişi ISO tarih dizesi olmalı"),
+  isActive: z.boolean().optional(),
 }).strict();
 
 /**
@@ -83,6 +62,13 @@ export const dropResponseSchema = z.object({
 });
 
 /**
+ * Drop'tan ayrılma yanıt modeli
+ */
+export const leaveDropResponseSchema = z.object({
+  status: z.enum(["left", "not_in_waitlist"]),
+});
+
+/**
  * Listeleme çıktısı
  */
 export const dropListResponseSchema = z.array(dropResponseSchema);
@@ -95,8 +81,5 @@ export type CreateDropInput = z.infer<typeof createDropSchema>;
 export type UpdateDropInput = z.infer<typeof updateDropSchema>;
 export type DropResponse = z.infer<typeof dropResponseSchema>;
 export type DropListResponse = z.infer<typeof dropListResponseSchema>;
-export type JoinDropBody = z.infer<typeof joinDropBodySchema>;
-export type LeaveDropBody = z.infer<typeof leaveDropBodySchema>;
-export type ClaimDropBody = z.infer<typeof claimDropBodySchema>;
 
 

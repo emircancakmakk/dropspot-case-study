@@ -3,6 +3,7 @@ import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import prismaPlugin from "./plugins/prisma";
 import authRoutes from "./modules/auth";
 import dropRoutes from "./modules/drops";
+import claimRoutes from "./modules/claim";
 import { validatorCompiler, serializerCompiler, ZodTypeProvider } from "fastify-type-provider-zod";
 import { AppError } from "./shared/errors";
 import jwt from "@fastify/jwt";
@@ -64,7 +65,11 @@ await app.register(async (scope) => {
   const r = scope.withTypeProvider<ZodTypeProvider>();
   await dropRoutes(r);
 }, { prefix: "/api" });
+await app.register(async (scope) => {
+  const r = scope.withTypeProvider<ZodTypeProvider>();
+  await claimRoutes(r);
+}, { prefix: "/api" });
 
-const port = Number(process.env.PORT ?? 3000);
+const port = Number(process.env.PORT ?? 5050);
 const host = process.env.HOST ?? "0.0.0.0";
 await app.listen({ port, host });
