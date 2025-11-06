@@ -3,12 +3,21 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { Drop } from "@/lib/types";
 import { toast } from "sonner";
-import { joinDropAction, leaveDropAction, claimDropAction } from "@/actions/drops";
+import {
+  joinDropAction,
+  leaveDropAction,
+  claimDropAction,
+} from "@/actions/drops";
 
 type Props = {
   drop: Pick<Drop, "id" | "claimStart" | "claimEnd" | "stock" | "isActive">;
@@ -16,7 +25,9 @@ type Props = {
   initialClaimed?: boolean;
 };
 
-function isApiError(error: unknown): error is { code?: string; message: string } {
+function isApiError(
+  error: unknown
+): error is { code?: string; message: string } {
   return (
     typeof error === "object" &&
     error !== null &&
@@ -37,7 +48,7 @@ export default function DropActions({
 }: Props) {
   const [inWaitlist, setInWaitlist] = React.useState(initialInWaitlist);
   const [claimed, setClaimed] = React.useState(initialClaimed);
-  const [claimCode, setClaimCode] = React.useState<string | null>('');
+  const [claimCode, setClaimCode] = React.useState<string | null>("");
   const [leaving, setLeaving] = React.useState(false);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -49,9 +60,7 @@ export default function DropActions({
         .then((res) => {
           if (res?.claimCode) setClaimCode(res.claimCode);
         })
-        .catch(() => {
-          /* sessiz geç */
-        });
+        .catch(() => {});
     }
   }, [claimed, claimCode, drop.id]);
 
@@ -82,7 +91,9 @@ export default function DropActions({
     try {
       const res = await leaveDropAction(drop.id);
       toast.success(
-        res.status === "not_in_waitlist" ? "Listede değildin" : "Bekleme listesinden ayrıldın"
+        res.status === "not_in_waitlist"
+          ? "Listede değildin"
+          : "Bekleme listesinden ayrıldın"
       );
       setInWaitlist(false);
     } catch (e: unknown) {
@@ -108,7 +119,9 @@ export default function DropActions({
       if (res.claimCode) setClaimCode(res.claimCode);
       setClaimed(true);
       toast.success(
-        res.status === "already_claimed" ? "Daha önce hak talep ettin" : "Hak başarıyla talep edildi"
+        res.status === "already_claimed"
+          ? "Daha önce hak talep ettin"
+          : "Hak başarıyla talep edildi"
       );
     } catch (e: unknown) {
       if (isApiError(e)) {
@@ -143,7 +156,11 @@ export default function DropActions({
     <div className="flex flex-wrap gap-2">
       {inWaitlist ? (
         <>
-          <Button variant="secondary" onClick={() => setConfirmOpen(true)} disabled={leaving}>
+          <Button
+            variant="secondary"
+            onClick={() => setConfirmOpen(true)}
+            disabled={leaving}
+          >
             Bekleme listesinden ayrıl
           </Button>
           <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>

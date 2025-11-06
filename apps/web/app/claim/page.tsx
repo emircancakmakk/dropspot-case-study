@@ -10,14 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { redirect } from "next/navigation";
-
-type ClaimItem = {
-  dropId: string;
-  dropTitle: string;
-  claimCode: string;
-  claimAt: string;
-  claimWindow: { start: string; end: string };
-};
+import { ClaimItem } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 

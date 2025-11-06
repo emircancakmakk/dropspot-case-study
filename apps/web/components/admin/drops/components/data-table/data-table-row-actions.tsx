@@ -82,7 +82,6 @@ export function DataTableRowActions({ drop }: { drop: Drop }) {
             <SheetTitle>Drop Düzenle</SheetTitle>
           </SheetHeader>
 
-          {/* useActionState'den gelen formAction'u KULLAN */}
           <form action={formAction} className="p-4 mt-6 space-y-5">
             <div className="grid gap-2">
               <Label htmlFor="title">Başlık</Label>

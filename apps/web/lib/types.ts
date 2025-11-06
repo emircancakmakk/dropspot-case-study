@@ -29,7 +29,6 @@ export type User = {
   role: string;
 };
 
-// Tip tanımlamaları
 export type SignInResponse = {
   accessToken: string;
   user: User;
@@ -85,10 +84,18 @@ export type JoinDropResponse = {
     id: string;
     userId: string;
     dropId: string;
-    joinedAt: string; // ISO
+    joinedAt: string;
   };
 };
 
 export type LeaveDropResponse = {
   status: "left" | "not_in_waitlist";
+};
+
+export type ClaimItem = {
+  dropId: string;
+  dropTitle: string;
+  claimCode: string;
+  claimAt: string;
+  claimWindow: { start: string; end: string };
 };
