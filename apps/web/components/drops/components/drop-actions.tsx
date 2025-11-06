@@ -45,6 +45,10 @@ function isClaimEnded(endISO: string) {
   return new Date() > new Date(endISO);
 }
 
+function isClaimStarted(startISO: string) {
+  return new Date() >= new Date(startISO);
+}
+
 export default function DropActions({
   drop,
   initialInWaitlist = false,
@@ -57,6 +61,8 @@ export default function DropActions({
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
   const canClaim = drop.isActive && isClaimOpen(drop.claimStart, drop.claimEnd);
+  const claimStarted = isClaimStarted(drop.claimStart);
+  const canJoin = !claimStarted && !isClaimEnded(drop.claimEnd);
 
   React.useEffect(() => {
     if (claimed && !claimCode) {
@@ -158,19 +164,12 @@ export default function DropActions({
 
   return (
     <div className="flex flex-wrap gap-2">
-      {claimed ? (
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Claim kodun:</span>
-          <code className="rounded bg-muted px-2 py-1 text-sm">
-            {claimCode ?? "—"}
-          </code>
-        </div>
-      ) : inWaitlist ? (
+      {inWaitlist ? (
         <>
           <Button
             variant="secondary"
             onClick={() => setConfirmOpen(true)}
-            disabled={leaving}
+            disabled={leaving || claimed}
           >
             Bekleme listesinden ayrıl
           </Button>
@@ -195,8 +194,12 @@ export default function DropActions({
         </>
       ) : (
         <>
-          {!isClaimEnded(drop.claimEnd) ? (
+          {canJoin ? (
             <Button onClick={onJoin}>Bekleme listesine katıl</Button>
+          ) : claimStarted ? (
+            <span className="text-sm text-muted-foreground">
+              Katılım süresi bitti
+            </span>
           ) : (
             <span className="text-sm text-muted-foreground">
               Claim süresi bitti

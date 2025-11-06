@@ -2,9 +2,6 @@ DropSpot – Sınırlı Stok ve Bekleme Listesi Platformu
 
 Başlangıç Zamanı (UTC): 2025-11-04 04:47
 
-Repo: `git@github.com:emircancakmakk/dropspot-case-study.git`
-
-
 ## Proje Özeti
 
 DropSpot, sınırlı stokla yayınlanan ürünler/etkinlikler için adil ve ölçeklenebilir bir bekleme listesi ve “claim” akışı sunar. Kullanıcılar kayıt olur, aktif drop’lara katılır, claim penceresi açıldığında sırayla hak kazanır ve tek-seferlik claim kodu ile ilerler. Admin paneli üzerinden drop CRUD işlemleri yapılır.
@@ -19,6 +16,9 @@ DropSpot, sınırlı stokla yayınlanan ürünler/etkinlikler için adil ve öl�
   - Unique constraint ve upsert/transaction kullanımı
   - Claim sırasında satır kilidi (SELECT … FOR UPDATE) ve stok/sıraya göre seçim
   - Tekil `claimCode` üretimi ve idempotent dönüş
+
+- Not: `markClaimedIfNot` fonksiyonu `updateMany({ where: { claimed: false } })`
+kullanarak atomic check-and-update uygular. Bu desen PostgreSQL’de row-level lock gerektirmez.
 
 Klasörler:
 
@@ -94,11 +94,11 @@ Backend (Fastify Guards):
 - Drop Claim:
   - Zaman penceresi kontrolü (`claimStart <= now <= claimEnd`), stok > 0 kontrolü
   - Transaction içinde:
-    - Kullanıcı için bekleme kaydını `FOR UPDATE` ile kilitle
+    - Kullanıcı için bekleme kaydı al
     - Zaten `claimed` ise var olan `claimCode` ile dön (idempotent)
     - Stok doğrulaması ve sıraya/önceliğe göre hak ver
-    - Tekil `claimCode` üret ve kaydet
-  - Doğru HTTP kodları: 400 (pencere kapalı), 401/403 (yetki), 404 (drop yok), 409 (stok tükendi), 409/200 (idempotent durumlar)
+    - Tekil `claimCode` üret ve koşullu UPDATE yap (`WHERE claimed=false`)
+  - Doğru HTTP kodları: 400 (pencere kapalı), 401/403 (yetki), 422 (drop yok), 409 (stok tükendi), 409/200 (idempotent durumlar)
 
 
 ## Seed Üretimi ve Kullanımı
@@ -283,7 +283,7 @@ yarn test
 
 - Fastify: performans, tip güvenliği (zod ile), plugin ekosistemi
 - Prisma: açık şema, migration ve unique/constraint yönetimi
-- PostgreSQL: transaction/lock ve `FOR UPDATE` gibi gelişmiş yetenekler
+- PostgreSQL: transaction, unique constraint ve koşullu UPDATE gibi atomik işlemleri destekler
 - Next.js: app router, iyi geliştirici deneyimi, modern UI bileşenleri
 - Idempotency: unique + transaction; API tekrar çağrılarında sonuç değişmez
 

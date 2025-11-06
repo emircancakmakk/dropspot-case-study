@@ -48,28 +48,6 @@ export function isDropActive(dropId: string) {
   });
 }
 
-export async function upsertWaitlist(input: {
-  userId: string;
-  dropId: string;
-  priorityScore: number;
-}) {
-  const { userId, dropId, priorityScore } = input;
-
-  return prisma.waitlist.upsert({
-    where: { userId_dropId: { userId, dropId } },
-    update: {}, // idempotent
-    create: { userId, dropId, priorityScore },
-    select: {
-      id: true,
-      userId: true,
-      dropId: true,
-      priorityScore: true,
-      joinedAt: true,
-      claimed: true,
-    },
-  });
-}
-
 export function deleteWaitlistEntry(userId: string, dropId: string) {
   return prisma.waitlist.deleteMany({
     where: {

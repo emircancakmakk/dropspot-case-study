@@ -17,7 +17,7 @@ await app.register(prismaPlugin);
 
 await app.register(jwt, {
   secret: process.env.JWT_SECRET!,
-  sign: { expiresIn: process.env.JWT_EXPIRES_IN || "15m" },
+  sign: { expiresIn: process.env.JWT_EXPIRES_IN || "1h" },
 });
 
 app.setErrorHandler((err, req, reply) => {
