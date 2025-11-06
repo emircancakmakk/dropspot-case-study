@@ -32,7 +32,7 @@ export function Navbar() {
             <NavigationMenuItem>
               <Link href="/claim">
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Claim
+                  Claim Kodlarım
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
