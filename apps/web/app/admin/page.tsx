@@ -1,6 +1,6 @@
 // app/admin/page.tsx
-import { columns } from "@/components/admin/drops/columns";
-import { DataTable } from "@/components/admin/drops/data-table";
+import { columns } from "@/components/admin/drops/components/data-table/columns";
+import { DataTable } from "@/components/admin/drops/components/data-table/data-table";
 import { listDrops } from "@/components/admin/drops/lib/api";
 
 export const dynamic = "force-dynamic";

@@ -14,7 +14,7 @@ export default async function UserMenu() {
     );
   return (
     <div className="flex items-center gap-3 text-sm">
-      {role === "admin" && <Link href="/admin/drops">Admin</Link>}
+      {role === "ADMIN" && <Link href="/admin">Admin</Link>}
       <SignOutButton />
     </div>
   );

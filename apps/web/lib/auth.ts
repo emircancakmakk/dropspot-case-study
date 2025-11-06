@@ -49,7 +49,7 @@ export async function getAuth() {
 
 export async function isAdmin(): Promise<boolean> {
   const role = await getRole()
-  return role === "admin"
+  return role === "ADMIN"
 }
 
 export async function isAuthenticated(): Promise<boolean> {

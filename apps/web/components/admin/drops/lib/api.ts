@@ -7,7 +7,7 @@ import {
 } from "@/lib/types";
 
 export async function listDrops() {
-  return await api<Drop[]>("/api/drops");
+  return await api<Drop[]>("/api/admin/drops");
 }
 
 export async function createDrop(data: CreateDropInput) {

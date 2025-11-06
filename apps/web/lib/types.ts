@@ -33,6 +33,7 @@ export type CreateDropInput = {
   stock: number;
   claimStart: string;
   claimEnd: string;
+  isActive: boolean;
 };
 
 export type CreateDropResponse = {

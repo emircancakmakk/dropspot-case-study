@@ -10,7 +10,6 @@ import type {
   SignUpResponse,
 } from "@/lib/types";
 
-// Yardımcı: NEXT_REDIRECT kontrolü
 function isNextRedirect(e: unknown): boolean {
   return (
     typeof e === "object" &&
@@ -21,12 +20,10 @@ function isNextRedirect(e: unknown): boolean {
   );
 }
 
-// Sign In Action
 export async function signInAction(
   prevState: ActionResponse | null,
   formData: FormData
 ): Promise<ActionResponse> {
-  // 1) Senkron validasyonlar
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -37,7 +34,6 @@ export async function signInAction(
     return { success: false, error: "Şifre en az 6 karakter olmalıdır" };
   }
 
-  // 2) API + setAuth hatalarını yakala
   try {
     const response = await api<SignInResponse>("/api/auth/signin", {
       method: "POST",
@@ -55,16 +51,13 @@ export async function signInAction(
     };
   }
 
-  // 3) Yönlendirme catch dışında
-  redirect("/"); // role'e göre istiyorsan burada koşullandır
+  redirect("/");
 }
 
-// Sign Up Action
 export async function signUpAction(
   prevState: ActionResponse | null,
   formData: FormData
 ): Promise<ActionResponse> {
-  // 1) Senkron validasyonlar
   const fullName = formData.get("fullName") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -83,7 +76,6 @@ export async function signUpAction(
     return { success: false, error: "Şifreler eşleşmiyor" };
   }
 
-  // 2) API + setAuth hatalarını yakala
   try {
     const response = await api<SignUpResponse>("/api/auth/signup", {
       method: "POST",
@@ -101,13 +93,10 @@ export async function signUpAction(
     };
   }
 
-  // 3) Yönlendirme catch dışında
   redirect("/");
 }
 
-// Sign Out Action
 export async function signOutAction() {
-  // try/catch şart değil; ama yazacaksan NEXT_REDIRECT’i rethrow et
   try {
     await clearAuth();
   } catch (e) {

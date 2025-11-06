@@ -36,14 +36,6 @@ export function Navbar() {
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <Link href="/admin">
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Admin
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
 
