@@ -135,9 +135,9 @@ Eğer admin olarak giriş yapmak istiyorsanız, mevcut bir kullanıcıyı **Pris
 
 1. Normal bir kullanıcı hesabı oluşturun (signup).
 2. Terminalde çalıştırın:
-   ```bash
-   npx prisma studio --schema apps/backend/prisma/schema.prisma
-   ```
+```bash
+npx prisma studio --schema apps/backend/prisma/schema.prisma
+```
 3. User tablosunu açın, ilgili kaydı seçin.
 4. role alanını `ADMIN` olarak değiştirin ve kaydedin.
 5. Tekrar giriş yapın.
